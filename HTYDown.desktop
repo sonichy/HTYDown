@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=HTYDown
+Categories=Utility;
+Comment=Download files
+Exec=/media/sonichy/job/HY/Linux/Qt/HTYDown/HTYDown
+Icon=/media/sonichy/job/HY/Linux/Qt/HTYDown/icon.png
+Path=/media/sonichy/job/HY/Linux/Qt/HTYDown
+StartupNotify=true
+Terminal=false
+Type=Application
+
