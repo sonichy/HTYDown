@@ -26,13 +26,12 @@ void Form::download(QString surl)
     connect(reply,SIGNAL(downloadProgress(qint64,qint64)),this,SLOT(updateProgress(qint64,qint64)));
     connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
     loop.exec();
-    QString filepath=ui->labelPath->text()+"/"+ui->labelFilename->text();
+    QString filepath=ui->labelPath->text() + "/" + ui->labelFilename->text();
     qDebug() << filepath;
     QFile file(filepath);
     file.open(QIODevice::WriteOnly);
     file.write(reply->readAll());
     file.close();
-
 }
 
 QString sbytes(qint64 bytes){

@@ -37,7 +37,9 @@ void MainWindow::showDialogNew()
 {
     dialognew->show();
     QClipboard *clipboard = QApplication::clipboard();
-    dialognew->ui->lineEditURL->setText(clipboard->text());
+    QByteArray BA = QByteArray::fromPercentEncoding(clipboard->text().toUtf8());
+    QString s = BA;
+    dialognew->ui->lineEditURL->setText(s);
     dialognew->ui->lineEditURL->setCursorPosition(0);
     dialognew->getFilename("");
 }
@@ -49,7 +51,7 @@ void MainWindow::on_action_quit_triggered()
 
 void MainWindow::on_action_changelog_triggered()
 {
-    QMessageBox aboutMB(QMessageBox::NoIcon, "更新历史", "1.0\n2017-06\n自定义列表行封装下载请求，解决下载互相干扰的问题。\n修复数据溢出问题。\n从剪贴板读取下载地址。\n从主程序中分离新建下载的部分方法。\n新建填入默认下载目录。\n\n0.1\n2017-01\n增加打开下载目录。\n添加行，删除行。\n增加停止下载。\n增加下载时长，下载字节单位换算。\n加入新建下载。\n制作主界面和新建界面。");
+    QMessageBox aboutMB(QMessageBox::NoIcon, "更新历史", "1.0\n2017-10\n使用fromPercentEncoding还原剪贴板网址编码。\n2017-06\n自定义列表行封装下载请求，解决下载互相干扰的问题。\n修复数据溢出问题。\n从剪贴板读取下载地址。\n从主程序中分离新建下载的部分方法。\n新建填入默认下载目录。\n\n0.1\n2017-01\n增加打开下载目录。\n添加行，删除行。\n增加停止下载。\n增加下载时长，下载字节单位换算。\n加入新建下载。\n制作主界面和新建界面。");
     aboutMB.exec();
 }
 
