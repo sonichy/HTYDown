@@ -22,7 +22,7 @@ void Form::download(QString surl)
     QUrl url(surl);
     QNetworkAccessManager manager;
     QEventLoop loop;
-    reply = manager.get(QNetworkRequest(url));
+    reply = manager.get(QNetworkRequest(url));    
     connect(reply,SIGNAL(downloadProgress(qint64,qint64)),this,SLOT(updateProgress(qint64,qint64)));
     connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
     loop.exec();

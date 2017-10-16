@@ -6,5 +6,8 @@
         <file>images/new.png</file>
         <file>images/pause.png</file>
         <file>images/start.png</file>
+        <file>images/down.png</file>
+        <file>images/tick.png</file>
+        <file>images/trash.png</file>
     </qresource>
 </RCC>

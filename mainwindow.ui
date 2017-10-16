@@ -17,8 +17,13 @@
    <iconset resource="files.qrc">
     <normaloff>:/images/icon.png</normaloff>:/images/icon.png</iconset>
   </property>
+  <property name="styleSheet">
+   <string notr="true">#listWidgetNav { background: #3B4751; }
+#listWidgetNav::item { padding: 10px; color:#79818A;}
+#listWidgetNav::item:selected { background: #232A30; color:#4A95CA; }</string>
+  </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QVBoxLayout" name="verticalLayout">
+   <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,5">
     <property name="spacing">
      <number>0</number>
     </property>
@@ -34,6 +39,9 @@
     <property name="bottomMargin">
      <number>0</number>
     </property>
+    <item>
+     <widget class="QListWidget" name="listWidgetNav"/>
+    </item>
     <item>
      <widget class="QListWidget" name="listWidget">
       <property name="editTriggers">

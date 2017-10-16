@@ -23,6 +23,7 @@ private slots:
     void on_action_changelog_triggered();
     void on_action_aboutQt_triggered();
     void on_action_about_triggered();
+    void on_actionStart_triggered();
     void on_actionPause_triggered();
     void on_actionDelete_triggered();
     void on_actionDirectory_triggered();
