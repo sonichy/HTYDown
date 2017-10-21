@@ -21,6 +21,9 @@ public:
     QElapsedTimer timer;
     void download(QString url);
 
+signals:
+    void downloadFinish();
+
 private slots:
     void updateProgress(qint64,qint64);
 };

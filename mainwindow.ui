@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>海天鹰下载器</string>
+   <string>海天鹰下载</string>
   </property>
   <property name="windowIcon">
    <iconset resource="files.qrc">
@@ -23,7 +23,7 @@
 #listWidgetNav::item:selected { background: #232A30; color:#4A95CA; }</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,5">
+   <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,5,0,0">
     <property name="spacing">
      <number>0</number>
     </property>
@@ -40,10 +40,23 @@
      <number>0</number>
     </property>
     <item>
-     <widget class="QListWidget" name="listWidgetNav"/>
+     <widget class="QListWidget" name="listWidgetNav">
+      <property name="minimumSize">
+       <size>
+        <width>120</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>120</width>
+        <height>16777215</height>
+       </size>
+      </property>
+     </widget>
     </item>
     <item>
-     <widget class="QListWidget" name="listWidget">
+     <widget class="QListWidget" name="listWidgetDownloading">
       <property name="editTriggers">
        <set>QAbstractItemView::NoEditTriggers</set>
       </property>
@@ -51,6 +64,12 @@
        <enum>QAbstractItemView::SelectRows</enum>
       </property>
      </widget>
+    </item>
+    <item>
+     <widget class="QListWidget" name="listWidgetDownloaded"/>
+    </item>
+    <item>
+     <widget class="QListWidget" name="listWidgetTrash"/>
     </item>
    </layout>
   </widget>

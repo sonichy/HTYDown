@@ -1,7 +1,5 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "dialognew.h"
-#include "ui_dialognew.h"
 #include "form.h"
 #include "ui_form.h"
 #include <QDesktopWidget>
@@ -12,21 +10,20 @@
 #include <QElapsedTimer>
 #include <QDesktopServices>
 #include <QClipboard>
-
-DialogNew *dialognew;
+#include <QCheckBox>
+#include <QFile>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    QListWidgetItem *LWI1,*LWI2,*LWI3;
-    LWI1 = new QListWidgetItem(QIcon(":/images/down.png"), "正在下载");
-    LWI2 = new QListWidgetItem(QIcon(":/images/tick.png"), "已经下载");
-    LWI3 = new QListWidgetItem(QIcon(":/images/trash.png"), "垃圾箱");
-    ui->listWidgetNav->insertItem(1, LWI1);
-    ui->listWidgetNav->insertItem(2, LWI2);
-    ui->listWidgetNav->insertItem(3, LWI3);
+    ui->listWidgetDownloaded->hide();
+    ui->listWidgetTrash->hide();
+    ui->listWidgetNav->addItem(new QListWidgetItem(QIcon(":/images/down.png"), "正在下载"));
+    ui->listWidgetNav->addItem(new QListWidgetItem(QIcon(":/images/tick.png"), "已经下载"));
+    ui->listWidgetNav->addItem(new QListWidgetItem(QIcon(":/images/trash.png"), "垃圾箱"));
+    ui->listWidgetNav->setCurrentRow(0);
 
     QDesktopWidget* desktop = QApplication::desktop();
     move((desktop->width() - this->width())/2, (desktop->height() - this->height())/2);
@@ -35,6 +32,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(dialognew,SIGNAL(accepted()),this,SLOT(addnew()));
     connect(ui->actionNew,SIGNAL(triggered(bool)),this,SLOT(showDialogNew()));
     connect(ui->action_new,SIGNAL(triggered(bool)),this,SLOT(showDialogNew()));
+    connect(ui->listWidgetNav,SIGNAL(itemClicked(QListWidgetItem*)),this,SLOT(itemClick(QListWidgetItem*)));
 }
 
 MainWindow::~MainWindow()
@@ -71,7 +69,7 @@ void MainWindow::on_action_aboutQt_triggered()
 
 void MainWindow::on_action_about_triggered()
 {
-    QMessageBox aboutMB(QMessageBox::NoIcon, "关于", "海天鹰下载器 1.0\n一款基于Qt的下载程序。\n作者：黄颖\nE-mail: sonichy@163.com\n主页：sonichy.96.lt\n参考文献：\n速度、时间计算，字节单位换算：http://blog.csdn.net/liang19890820/article/details/50814339");
+    QMessageBox aboutMB(QMessageBox::NoIcon, "关于", "海天鹰下载 1.0\n一款基于Qt的下载程序。\n作者：黄颖\nE-mail: sonichy@163.com\n主页：sonichy.96.lt\n参考文献：\n速度、时间计算，字节单位换算：http://blog.csdn.net/liang19890820/article/details/50814339");
     QPixmap pixmap;
     pixmap.load(":images/icon.png");
     aboutMB.setIconPixmap(pixmap);
@@ -85,24 +83,52 @@ void MainWindow::on_actionStart_triggered()
 
 void MainWindow::on_actionPause_triggered()
 {
-    if(ui->listWidget->count() != 0){
-        if(((Form*)(ui->listWidget->itemWidget(ui->listWidget->item(ui->listWidget->currentRow()))))->reply){
-            if(!((Form*)(ui->listWidget->itemWidget(ui->listWidget->item(ui->listWidget->currentRow()))))->reply->isFinished())((Form*)(ui->listWidget->itemWidget(ui->listWidget->item(ui->listWidget->currentRow()))))->reply->abort();
-            qDebug() << "pause reply" << ((Form*)(ui->listWidget->itemWidget(ui->listWidget->item(ui->listWidget->currentRow()))))->reply;
+    if(ui->listWidgetDownloading->count() != 0){
+        if(((Form*)(ui->listWidgetDownloading->itemWidget(ui->listWidgetDownloading->item(ui->listWidgetDownloading->currentRow()))))->reply){
+            if(!((Form*)(ui->listWidgetDownloading->itemWidget(ui->listWidgetDownloading->item(ui->listWidgetDownloading->currentRow()))))->reply->isFinished())((Form*)(ui->listWidgetDownloading->itemWidget(ui->listWidgetDownloading->item(ui->listWidgetDownloading->currentRow()))))->reply->abort();
+            qDebug() << "pause reply" << ((Form*)(ui->listWidgetDownloading->itemWidget(ui->listWidgetDownloading->item(ui->listWidgetDownloading->currentRow()))))->reply;
         }
     }
 }
 
 void MainWindow::on_actionDelete_triggered()
 {
-    on_actionPause_triggered();
-    ui->listWidget->takeItem(ui->listWidget->currentRow());
+    //on_actionPause_triggered();    
+    if(ui->listWidgetNav->currentRow() == 0){
+        Form *form = (Form*)(ui->listWidgetDownloading->itemWidget(ui->listWidgetDownloading->item(ui->listWidgetDownloading->currentRow())));
+        QListWidgetItem *LWI = new QListWidgetItem(ui->listWidgetTrash);
+        LWI->setSizeHint(QSize(1200,30));
+        ui->listWidgetTrash->setItemWidget(LWI,form);
+        ui->listWidgetTrash->addItem(LWI);
+        ui->listWidgetDownloading->setCurrentRow(-1);
+    }else if(ui->listWidgetNav->currentRow() == 1){
+        Form *form = (Form*)(ui->listWidgetDownloaded->itemWidget(ui->listWidgetDownloaded->item(ui->listWidgetDownloaded->currentRow())));
+        QListWidgetItem *LWI = new QListWidgetItem(ui->listWidgetTrash);
+        ui->listWidgetTrash->addItem(LWI);
+        ui->listWidgetTrash->setItemWidget(LWI,form);
+        LWI->setSizeHint(QSize(1200,30));        
+    }else if(ui->listWidgetNav->currentRow() == 2){
+        Form *form = (Form*)(ui->listWidgetTrash->itemWidget(ui->listWidgetTrash->item(ui->listWidgetTrash->currentRow())));
+        QMessageBox msgbox(QMessageBox::Critical, "删除", "你确定要删除此任务吗？", QMessageBox::Ok | QMessageBox::Cancel);
+        QCheckBox checkDelete("同时删除文件", &msgbox);
+        msgbox.layout()->addWidget(&checkDelete);
+        if(msgbox.exec() == QMessageBox::Ok){
+            bool b = checkDelete.checkState();
+            qDebug() << b;
+            if(b){
+                QString filename = form->ui->labelPath->text() + "/" + form->ui->labelFilename->text();
+                qDebug() << filename;
+                QFile::remove(filename);
+            }
+            ui->listWidgetTrash->takeItem(ui->listWidgetTrash->currentRow());
+        }
+    }
 }
 
 void MainWindow::on_actionDirectory_triggered()
 {    
-    if(ui->listWidget->count() != 0){
-        QString path=((Form*)(ui->listWidget->itemWidget(ui->listWidget->item(ui->listWidget->currentRow()))))->ui->labelPath->text();
+    if(ui->listWidgetDownloading->count() != 0){
+        QString path=((Form*)(ui->listWidgetDownloading->itemWidget(ui->listWidgetDownloading->item(ui->listWidgetDownloading->currentRow()))))->ui->labelPath->text();
         qDebug() << path;
         QDesktopServices::openUrl(QUrl::fromLocalFile(path));
     }
@@ -113,17 +139,56 @@ void MainWindow::addnew()
     QDateTime time = QDateTime::currentDateTime();
     QString stime = time.toString("yyyy-MM-dd hh:mm:ss");
     QString surl = dialognew->ui->lineEditURL->text();
-    QString sfn=dialognew->ui->lineEditFilename->text();
-    QString spath=dialognew->ui->lineEditPath->text();
-    Form *form=new Form;
+    QString sfn = dialognew->ui->lineEditFilename->text();
+    QString spath = dialognew->ui->lineEditPath->text();
+    Form *form = new Form;
     form->ui->labelFilename->setText(sfn);
     form->ui->labelURL->setText(surl);
     form->ui->labelURL->adjustSize();
     form->ui->labelPath->setText(spath);
     form->ui->labelTimeCreate->setText(stime);
-    QListWidgetItem *LWI = new QListWidgetItem(ui->listWidget);
-    ui->listWidget->addItem(LWI);
-    ui->listWidget->setItemWidget(LWI,form);
+    QListWidgetItem *LWI = new QListWidgetItem(ui->listWidgetDownloading);
+    ui->listWidgetDownloading->addItem(LWI);
+    ui->listWidgetDownloading->setItemWidget(LWI,form);
     LWI->setSizeHint(QSize(1200,30));
     form->download(surl);
+    connect(form,SIGNAL(downloadFinish()),this,SLOT(moveToDownloaded()));
+}
+
+void MainWindow::itemClick(QListWidgetItem *item)
+{
+    Q_UNUSED(item);
+    //qDebug() << item->text();
+    switch( ui->listWidgetNav->currentRow() ) {
+    case 0:
+        ui->listWidgetDownloading->show();
+        ui->listWidgetDownloaded->hide();
+        ui->listWidgetTrash->hide();
+        break;
+    case 1:
+        ui->listWidgetDownloading->hide();
+        ui->listWidgetDownloaded->show();
+        ui->listWidgetTrash->hide();
+        break;
+    case 2:
+        ui->listWidgetDownloading->hide();
+        ui->listWidgetDownloaded->hide();
+        ui->listWidgetTrash->show();
+        break;
+    }
+}
+
+void MainWindow::moveToDownloaded()
+{
+    qDebug() << "moveToDownloaded";
+    Form *form = qobject_cast<Form*>(sender());
+    QListWidgetItem *LWI = new QListWidgetItem(ui->listWidgetDownloaded);
+    ui->listWidgetDownloaded->addItem(LWI);
+    ui->listWidgetDownloaded->setItemWidget(LWI,form);
+    LWI->setSizeHint(QSize(1200,30));
+    for(int i=0; i<ui->listWidgetDownloading->count(); i++){
+        if( form == ((Form*)(ui->listWidgetDownloading->itemWidget(ui->listWidgetDownloading->item(i)))) ){
+            ui->listWidgetDownloading->takeItem(i);
+        }
+    }
 }

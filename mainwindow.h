@@ -2,6 +2,9 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QListWidgetItem>
+#include "dialognew.h"
+#include "ui_dialognew.h"
 
 namespace Ui {
 class MainWindow;
@@ -17,6 +20,7 @@ public:
 
 private:
     Ui::MainWindow *ui;
+    DialogNew *dialognew;
 
 private slots:
     void on_action_quit_triggered();
@@ -29,6 +33,8 @@ private slots:
     void on_actionDirectory_triggered();
     void showDialogNew();
     void addnew();
+    void itemClick(QListWidgetItem *item);
+    void moveToDownloaded();
 };
 
 #endif // MAINWINDOW_H
