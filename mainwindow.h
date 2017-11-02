@@ -21,6 +21,9 @@ public:
 private:
     Ui::MainWindow *ui;
     DialogNew *dialognew;
+    void appendList(QString filenameWrite, QString filename, QString size, int progressmax, int progress, QString speed, QString url, QString elapse, QString timeCreate, QString path);
+    void saveList(QString filename);
+    void loadList(QString filename);
 
 private slots:
     void on_action_quit_triggered();
@@ -35,6 +38,7 @@ private slots:
     void addnew();
     void itemClick(QListWidgetItem *item);
     void moveToDownloaded();
+
 };
 
 #endif // MAINWINDOW_H

@@ -3,6 +3,7 @@
 #include <QNetworkAccessManager>
 #include <QFile>
 #include <QDebug>
+#include <QDir>
 
 Form::Form(QWidget *parent) :
     QWidget(parent),
@@ -17,7 +18,7 @@ Form::~Form()
 }
 
 void Form::download(QString surl)
-{
+{    
     timer.start();
     QUrl url(surl);
     QNetworkAccessManager manager;
@@ -33,6 +34,7 @@ void Form::download(QString surl)
     file.write(reply->readAll());
     file.close();
     emit downloadFinish();
+    appendList("downloaded", ui->labelFilename->text(), ui->labelSize->text(), ui->progressBar->value(), ui->progressBar->maximum(), ui->labelSpeed->text(), ui->labelURL->text(), ui->labelElapse->text(), ui->labelTimeCreate->text(), ui->labelPath->text());
 }
 
 QString sbytes(qint64 bytes){
@@ -93,4 +95,16 @@ void Form::updateProgress(qint64 bytesReceived, qint64 bytesTotal)
     }
     ui->labelSpeed->setText(QString("%1").arg(sspeed(speed)));
     ui->labelElapse->setText(selapse);
+}
+
+void Form::appendList(QString filenameWrite, QString filename, QString size, int progressmax, int progress, QString speed, QString url, QString elapse, QString timeCreate, QString path)
+{
+    QString filepath = QDir::currentPath() + "/" + filenameWrite;
+    QFile file(filepath);
+    if(file.open(QFile::WriteOnly | QIODevice::Append)){
+        QTextStream ts(&file);
+        QString s = filename + "#" + size + "#" + QString::number(progressmax) + "#" + QString::number(progress)+ "#" + speed + "#" + url + "#" + elapse + "#" + timeCreate + "#" + path + "\n";
+        ts << s;
+        file.close();
+    }
 }
