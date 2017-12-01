@@ -91,7 +91,7 @@ void MainWindow::on_action_quit_triggered()
 
 void MainWindow::on_action_changelog_triggered()
 {
-    QString s = "1.0\n2017-11\n更新日志使用QTextBrowser代替QMessageBox。\n采用逐个赋值的方法复制移动列表项，解决崩溃问题。\n2017-10\n保存正在下载、已经下载、垃圾箱列表。\n左侧增加正在下载、已经下载、垃圾箱。\n修复空列表打开文件夹崩溃Bug。\n使用fromPercentEncoding还原剪贴板网址编码。\n2017-06\n自定义列表行封装下载请求，解决下载互相干扰的问题。\n修复数据溢出问题。\n从剪贴板读取下载地址。\n从主程序中分离新建下载的部分方法。\n新建填入默认下载目录。\n\n0.1\n2017-01\n增加打开下载目录。\n添加行，删除行。\n增加停止下载。\n增加下载时长，下载字节单位换算。\n加入新建下载。\n制作主界面和新建界面。";
+    QString s = "1.1\n2017-12\n增加迅雷协议解析。\n\n1.0\n2017-11\n更新日志使用QTextBrowser代替QMessageBox。\n采用逐个赋值的方法复制移动列表项，解决崩溃问题。\n2017-10\n保存正在下载、已经下载、垃圾箱列表。\n左侧增加正在下载、已经下载、垃圾箱。\n修复空列表打开文件夹崩溃Bug。\n使用fromPercentEncoding还原剪贴板网址编码。\n2017-06\n自定义列表行封装下载请求，解决下载互相干扰的问题。\n修复数据溢出问题。\n从剪贴板读取下载地址。\n从主程序中分离新建下载的部分方法。\n新建填入默认下载目录。\n\n0.1\n2017-01\n增加打开下载目录。\n添加行，删除行。\n增加停止下载。\n增加下载时长，下载字节单位换算。\n加入新建下载。\n制作主界面和新建界面。";
     QDialog *dialog = new QDialog;
     dialog->setWindowTitle("更新历史");
     dialog->setFixedSize(400,300);
@@ -121,7 +121,7 @@ void MainWindow::on_action_aboutQt_triggered()
 
 void MainWindow::on_action_about_triggered()
 {
-    QMessageBox aboutMB(QMessageBox::NoIcon, "关于", "海天鹰下载 1.0\n一款基于Qt的下载程序。\n作者：黄颖\nE-mail: sonichy@163.com\n主页：sonichy.96.lt\n参考文献：\n速度、时间计算，字节单位换算：http://blog.csdn.net/liang19890820/article/details/50814339");
+    QMessageBox aboutMB(QMessageBox::NoIcon, "关于", "海天鹰下载 1.1\n一款基于Qt的下载程序。\n作者：黄颖\nE-mail: sonichy@163.com\n主页：sonichy.96.lt\n参考文献：\n速度、时间计算，字节单位换算：http://blog.csdn.net/liang19890820/article/details/50814339");
     QPixmap pixmap;
     pixmap.load(":images/icon.png");
     aboutMB.setIconPixmap(pixmap);
@@ -212,11 +212,25 @@ void MainWindow::on_actionDelete_triggered()
 }
 
 void MainWindow::on_actionDirectory_triggered()
-{    
-    if(ui->listWidgetDownloading->count() != 0){
-        QString path = ((Form*)(ui->listWidgetDownloading->itemWidget(ui->listWidgetDownloading->item(ui->listWidgetDownloading->currentRow()))))->ui->labelPath->text();
-        qDebug() << path;
-        QDesktopServices::openUrl(QUrl::fromLocalFile(path));
+{
+    if(ui->listWidgetNav->currentRow() == 0){
+        if(ui->listWidgetDownloading->count() != 0){
+            QString path = ((Form*)(ui->listWidgetDownloading->itemWidget(ui->listWidgetDownloading->item(ui->listWidgetDownloading->currentRow()))))->ui->labelPath->text();
+            qDebug() << path;
+            QDesktopServices::openUrl(QUrl::fromLocalFile(path));
+        }
+    }else if(ui->listWidgetNav->currentRow() == 1){
+        if(ui->listWidgetDownloading->count() != 0){
+            QString path = ((Form*)(ui->listWidgetDownloaded->itemWidget(ui->listWidgetDownloaded->item(ui->listWidgetDownloaded->currentRow()))))->ui->labelPath->text();
+            qDebug() << path;
+            QDesktopServices::openUrl(QUrl::fromLocalFile(path));
+        }
+    }else if(ui->listWidgetNav->currentRow() == 2){
+        if(ui->listWidgetDownloading->count() != 0){
+            QString path = ((Form*)(ui->listWidgetTrash->itemWidget(ui->listWidgetTrash->item(ui->listWidgetTrash->currentRow()))))->ui->labelPath->text();
+            qDebug() << path;
+            QDesktopServices::openUrl(QUrl::fromLocalFile(path));
+        }
     }
 }
 
@@ -224,9 +238,17 @@ void MainWindow::addnew()
 {
     QDateTime time = QDateTime::currentDateTime();
     QString stime = time.toString("yyyy-MM-dd hh:mm:ss");
-    QString surl = dialognew->ui->lineEditURL->text();
     QString sfn = dialognew->ui->lineEditFilename->text();
     QString spath = dialognew->ui->lineEditPath->text();
+    QString surl = dialognew->ui->lineEditURL->text();
+    if(surl.startsWith("thunder://")){
+        qDebug() << "thunder://" << surl.mid(10);
+        QByteArray BA = QByteArray::fromBase64(surl.mid(10).toUtf8()).mid(2);
+        surl = QByteArray::fromPercentEncoding(BA.mid(0,BA.length()-2));
+        qDebug() << "迅雷协议解码：" << surl;
+        sfn = QFileInfo(surl).fileName();
+        sfn = sfn.left(sfn.indexOf("?"));
+    }
     Form *form = new Form;
     form->ui->labelFilename->setText(sfn);
     form->ui->labelURL->setText(surl);

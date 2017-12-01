@@ -19,7 +19,7 @@ Form::~Form()
 
 void Form::download(QString surl)
 {    
-    timer.start();
+    timer.start();    
     QUrl url(surl);
     QNetworkAccessManager manager;
     QEventLoop loop;

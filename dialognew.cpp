@@ -31,7 +31,7 @@ void DialogNew::browse()
 
 void DialogNew::getFilename(QString s)
 {
-   QString fn=QFileInfo(ui->lineEditURL->text()).fileName();
-   fn=fn.left(fn.indexOf("?"));
+   QString fn = QFileInfo(s).fileName();
+   fn = fn.left(fn.indexOf("?"));
    ui->lineEditFilename->setText(fn);
 }
