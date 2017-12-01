@@ -38,6 +38,7 @@ private slots:
     void addnew();
     void itemClick(QListWidgetItem *item);
     void moveToDownloaded();
+    void viewContextMenu(const QPoint &position);
 
 };
 

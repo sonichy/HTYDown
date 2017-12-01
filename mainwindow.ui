@@ -57,6 +57,9 @@
     </item>
     <item>
      <widget class="QListWidget" name="listWidgetDownloading">
+      <property name="contextMenuPolicy">
+       <enum>Qt::CustomContextMenu</enum>
+      </property>
       <property name="editTriggers">
        <set>QAbstractItemView::NoEditTriggers</set>
       </property>

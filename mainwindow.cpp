@@ -25,6 +25,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->listWidgetNav->addItem(new QListWidgetItem(QIcon(":/images/tick.png"), "已经下载"));
     ui->listWidgetNav->addItem(new QListWidgetItem(QIcon(":/images/trash.png"), "垃圾箱"));
     ui->listWidgetNav->setCurrentRow(0);
+    connect(ui->listWidgetDownloading, SIGNAL(customContextMenuRequested(QPoint)),this, SLOT(viewContextMenu(QPoint)));
 
     QDesktopWidget* desktop = QApplication::desktop();
     move((desktop->width() - this->width())/2, (desktop->height() - this->height())/2);
@@ -81,7 +82,7 @@ void MainWindow::showDialogNew()
     QString s = BA;
     dialognew->ui->lineEditURL->setText(s);
     dialognew->ui->lineEditURL->setCursorPosition(0);
-    dialognew->getFilename("");
+    //dialognew->getFilename("");
 }
 
 void MainWindow::on_action_quit_triggered()
@@ -403,4 +404,26 @@ void MainWindow::saveList(QString filename)
         ts << s;
         file.close();
     }
+}
+
+void MainWindow::viewContextMenu(const QPoint &position)
+{
+    QAction *action_copyurl;
+    QAction *result_action;
+    QModelIndex index = ui->listWidgetDownloading->indexAt(position);
+    QList<QAction *> actions;
+    action_copyurl = new QAction(this);
+    action_copyurl->setText("复制下载地址");
+    actions.append(action_copyurl);
+    if(index.isValid()){
+        result_action = QMenu::exec(actions,ui->listWidgetDownloading->mapToGlobal(position));
+    }
+    if(result_action == action_copyurl) {
+        Form *form = (Form*)(ui->listWidgetDownloading->itemWidget(ui->listWidgetDownloading->item(ui->listWidgetDownloading->currentRow())));
+        QString s = form->ui->labelURL->text();
+        QClipboard *clipboard = QApplication::clipboard();
+        clipboard->setText(s);
+        return;
+    }
+
 }
