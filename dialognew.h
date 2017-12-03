@@ -20,7 +20,7 @@ private:
     QString dir,path;
 
 public slots:
-    void getFilename(QString);
+    void textChange(QString);
 
 private slots:
     void browse();
