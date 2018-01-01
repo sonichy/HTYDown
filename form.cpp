@@ -27,14 +27,14 @@ void Form::download(QString surl)
     connect(reply,SIGNAL(downloadProgress(qint64,qint64)),this,SLOT(updateProgress(qint64,qint64)));
     connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
     loop.exec();
-    QString filename = ui->labelPath->text() + "/" + ui->labelFilename->text();
+    QString filename = ui->labelPath->text() + "/" + QFileInfo(surl).fileName();
     qDebug() << filename;
     QFile file(filename);
     file.open(QIODevice::WriteOnly);
     file.write(reply->readAll());
     file.close();
     emit downloadFinish();
-    appendList("downloaded", ui->labelFilename->text(), ui->labelSize->text(), ui->progressBar->value(), ui->progressBar->maximum(), ui->labelSpeed->text(), ui->labelURL->text(), ui->labelElapse->text(), ui->labelTimeCreate->text(), ui->labelPath->text());
+    appendList("downloaded", ui->labelFilename->text(), ui->labelSize->text(), ui->progressBar->value(), ui->progressBar->maximum(), ui->labelSpeed->text(), ui->labelURL->text(), ui->labelElapse->text(), ui->labelTimeCreate->text(), ui->labelPath->text());    
 }
 
 QString sbytes(qint64 bytes){

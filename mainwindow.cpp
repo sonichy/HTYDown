@@ -30,8 +30,8 @@ MainWindow::MainWindow(QWidget *parent) :
     QDesktopWidget* desktop = QApplication::desktop();
     move((desktop->width() - this->width())/2, (desktop->height() - this->height())/2);
 
-    dialognew = new DialogNew(this);
-    connect(dialognew,SIGNAL(accepted()),this,SLOT(addnew()));
+    dialogNew = new DialogNew(this);
+    connect(dialogNew,SIGNAL(accepted()),this,SLOT(addNew()));
     connect(ui->actionNew,SIGNAL(triggered(bool)),this,SLOT(showDialogNew()));
     connect(ui->action_new,SIGNAL(triggered(bool)),this,SLOT(showDialogNew()));
     connect(ui->listWidgetNav,SIGNAL(itemClicked(QListWidgetItem*)),this,SLOT(itemClick(QListWidgetItem*)));
@@ -76,13 +76,13 @@ MainWindow::~MainWindow()
 
 void MainWindow::showDialogNew()
 {
-    dialognew->show();
+    dialogNew->show();
     QClipboard *clipboard = QApplication::clipboard();
     QByteArray BA = QByteArray::fromPercentEncoding(clipboard->text().toUtf8());
     QString s = BA;
-    dialognew->ui->lineEditURL->setText(s);
-    dialognew->ui->lineEditURL->setCursorPosition(0);
-    //dialognew->getFilename("");
+    dialogNew->ui->textEditURL->setText(s);
+    dialogNew->ui->textEditURL->textCursor().movePosition(QTextCursor::Start,QTextCursor::MoveAnchor,1);
+    //dialogNew->getFilename("");
 }
 
 void MainWindow::on_action_quit_triggered()
@@ -92,7 +92,7 @@ void MainWindow::on_action_quit_triggered()
 
 void MainWindow::on_action_changelog_triggered()
 {
-    QString s = "1.1\n2017-12\n增加迅雷协议解析。\n\n1.0\n2017-11\n更新日志使用QTextBrowser代替QMessageBox。\n采用逐个赋值的方法复制移动列表项，解决崩溃问题。\n2017-10\n保存正在下载、已经下载、垃圾箱列表。\n左侧增加正在下载、已经下载、垃圾箱。\n修复空列表打开文件夹崩溃Bug。\n使用fromPercentEncoding还原剪贴板网址编码。\n2017-06\n自定义列表行封装下载请求，解决下载互相干扰的问题。\n修复数据溢出问题。\n从剪贴板读取下载地址。\n从主程序中分离新建下载的部分方法。\n新建填入默认下载目录。\n\n0.1\n2017-01\n增加打开下载目录。\n添加行，删除行。\n增加停止下载。\n增加下载时长，下载字节单位换算。\n加入新建下载。\n制作主界面和新建界面。";
+    QString s = "1.2\n2018-01\n增加批量下载。\n增加一键清空。\n新建下载判断目录可写而且可以创建文件夹。\n\n1.1\n2017-12\n增加迅雷协议解析。\n\n1.0\n2017-11\n更新日志使用QTextBrowser代替QMessageBox。\n采用逐个赋值的方法复制移动列表项，解决崩溃问题。\n2017-10\n保存正在下载、已经下载、垃圾箱列表。\n左侧增加正在下载、已经下载、垃圾箱。\n修复空列表打开文件夹崩溃Bug。\n使用fromPercentEncoding还原剪贴板网址编码。\n2017-06\n自定义列表行封装下载请求，解决下载互相干扰的问题。\n修复数据溢出问题。\n从剪贴板读取下载地址。\n从主程序中分离新建下载的部分方法。\n新建填入默认下载目录。\n\n0.1\n2017-01\n增加打开下载目录。\n添加行，删除行。\n增加停止下载。\n增加下载时长，下载字节单位换算。\n加入新建下载。\n制作主界面和新建界面。";
     QDialog *dialog = new QDialog;
     dialog->setWindowTitle("更新历史");
     dialog->setFixedSize(400,300);
@@ -122,7 +122,7 @@ void MainWindow::on_action_aboutQt_triggered()
 
 void MainWindow::on_action_about_triggered()
 {
-    QMessageBox aboutMB(QMessageBox::NoIcon, "关于", "海天鹰下载 1.1\n一款基于Qt的下载程序。\n作者：黄颖\nE-mail: sonichy@163.com\n主页：sonichy.96.lt\n参考文献：\n速度、时间计算，字节单位换算：http://blog.csdn.net/liang19890820/article/details/50814339");
+    QMessageBox aboutMB(QMessageBox::NoIcon, "关于", "海天鹰下载 1.2\n一款基于Qt的下载程序。\n作者：黄颖\nE-mail: sonichy@163.com\n主页：sonichy.96.lt\n参考文献：\n速度、时间计算，字节单位换算：http://blog.csdn.net/liang19890820/article/details/50814339");
     QPixmap pixmap;
     pixmap.load(":images/icon.png");
     aboutMB.setIconPixmap(pixmap);
@@ -212,6 +212,20 @@ void MainWindow::on_actionDelete_triggered()
     }
 }
 
+void MainWindow::on_actionTrash_triggered()
+{
+    if(ui->listWidgetNav->currentRow() == 0){
+        ui->listWidgetDownloading->clear();
+        saveList("downloading");
+    }else if(ui->listWidgetNav->currentRow() == 1){
+        ui->listWidgetDownloaded->clear();
+        saveList("downloaded");
+    }else if(ui->listWidgetNav->currentRow() == 2){
+        ui->listWidgetTrash->clear();
+        saveList("trash");
+    }
+}
+
 void MainWindow::on_actionDirectory_triggered()
 {
     if(ui->listWidgetNav->currentRow() == 0){
@@ -235,13 +249,13 @@ void MainWindow::on_actionDirectory_triggered()
     }
 }
 
-void MainWindow::addnew()
+void MainWindow::addNew()
 {
     QDateTime time = QDateTime::currentDateTime();
     QString stime = time.toString("yyyy-MM-dd hh:mm:ss");
-    QString sfn = dialognew->ui->lineEditFilename->text();
-    QString spath = dialognew->ui->lineEditPath->text();
-    QString surl = dialognew->ui->lineEditURL->text();
+    QString sfn = dialogNew->ui->lineEditFilename->text();
+    QString spath = dialogNew->ui->lineEditPath->text();
+    QString surl = dialogNew->ui->textEditURL->toPlainText();
     if(surl.startsWith("thunder://")){
         qDebug() << "thunder://" << surl.mid(10);
         QByteArray BA = QByteArray::fromBase64(surl.mid(10).toUtf8()).mid(2);
@@ -249,20 +263,24 @@ void MainWindow::addnew()
         qDebug() << "迅雷协议解码：" << surl;
         sfn = QFileInfo(surl).fileName();
         sfn = sfn.left(sfn.indexOf("?"));
+    }else{
+        QStringList SL = surl.split("\n");
+        for(int i=0; i<SL.size(); i++){
+            Form *form = new Form;
+            form->ui->labelFilename->setText(QFileInfo(SL.at(i)).fileName());
+            form->ui->labelURL->setText(SL.at(i));
+            form->ui->labelURL->adjustSize();
+            form->ui->labelPath->setText(spath);
+            form->ui->labelTimeCreate->setText(stime);
+            QListWidgetItem *LWI = new QListWidgetItem(ui->listWidgetDownloading);
+            ui->listWidgetDownloading->setItemWidget(LWI,form);
+            LWI->setSizeHint(QSize(1200,30));
+            ui->listWidgetDownloading->addItem(LWI);
+            form->download(SL.at(i));
+            connect(form,SIGNAL(downloadFinish()),this,SLOT(moveToDownloaded()));
+            saveList("downloading");
+        }
     }
-    Form *form = new Form;
-    form->ui->labelFilename->setText(sfn);
-    form->ui->labelURL->setText(surl);
-    form->ui->labelURL->adjustSize();
-    form->ui->labelPath->setText(spath);
-    form->ui->labelTimeCreate->setText(stime);
-    QListWidgetItem *LWI = new QListWidgetItem(ui->listWidgetDownloading);
-    ui->listWidgetDownloading->setItemWidget(LWI,form);
-    LWI->setSizeHint(QSize(1200,30));
-    ui->listWidgetDownloading->addItem(LWI);
-    form->download(surl);
-    connect(form,SIGNAL(downloadFinish()),this,SLOT(moveToDownloaded()));
-    saveList("downloading");
 }
 
 void MainWindow::itemClick(QListWidgetItem *item)

@@ -114,6 +114,7 @@
    <addaction name="actionStart"/>
    <addaction name="actionPause"/>
    <addaction name="actionDelete"/>
+   <addaction name="actionTrash"/>
    <addaction name="actionDirectory"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
@@ -194,6 +195,18 @@
    </property>
    <property name="text">
     <string>下载目录</string>
+   </property>
+  </action>
+  <action name="actionTrash">
+   <property name="icon">
+    <iconset resource="files.qrc">
+     <normaloff>:/images/trash.png</normaloff>:/images/trash.png</iconset>
+   </property>
+   <property name="text">
+    <string>trash</string>
+   </property>
+   <property name="toolTip">
+    <string>清空</string>
    </property>
   </action>
  </widget>

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>230</height>
+    <height>350</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -41,7 +41,7 @@
         <string>下载地址：</string>
        </property>
        <property name="alignment">
-        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
        </property>
       </widget>
      </item>
@@ -52,16 +52,6 @@
        </property>
        <property name="alignment">
         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="2">
-      <widget class="QLineEdit" name="lineEditURL">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
        </property>
       </widget>
      </item>
@@ -76,8 +66,18 @@
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
+       <property name="focusPolicy">
+        <enum>Qt::NoFocus</enum>
+       </property>
        <property name="text">
         <string>浏览</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="2">
+      <widget class="QLineEdit" name="lineEditDecode">
+       <property name="readOnly">
+        <bool>true</bool>
        </property>
       </widget>
      </item>
@@ -91,12 +91,8 @@
        </property>
       </widget>
      </item>
-     <item row="1" column="2">
-      <widget class="QLineEdit" name="lineEditDecode">
-       <property name="readOnly">
-        <bool>true</bool>
-       </property>
-      </widget>
+     <item row="0" column="2">
+      <widget class="QTextEdit" name="textEditURL"/>
      </item>
     </layout>
    </item>
@@ -119,10 +115,10 @@
   </layout>
  </widget>
  <tabstops>
-  <tabstop>lineEditURL</tabstop>
+  <tabstop>textEditURL</tabstop>
+  <tabstop>lineEditDecode</tabstop>
   <tabstop>lineEditFilename</tabstop>
   <tabstop>lineEditPath</tabstop>
-  <tabstop>btnBrowse</tabstop>
  </tabstops>
  <resources/>
  <connections>

@@ -20,10 +20,11 @@ public:
 
 private:
     Ui::MainWindow *ui;
-    DialogNew *dialognew;
+    DialogNew *dialogNew;
     void appendList(QString filenameWrite, QString filename, QString size, int progressmax, int progress, QString speed, QString url, QString elapse, QString timeCreate, QString path);
     void saveList(QString filename);
     void loadList(QString filename);
+    void checkWriteable();
 
 private slots:
     void on_action_quit_triggered();
@@ -33,9 +34,10 @@ private slots:
     void on_actionStart_triggered();
     void on_actionPause_triggered();
     void on_actionDelete_triggered();
+    void on_actionTrash_triggered();
     void on_actionDirectory_triggered();
     void showDialogNew();
-    void addnew();
+    void addNew();
     void itemClick(QListWidgetItem *item);
     void moveToDownloaded();
     void viewContextMenu(const QPoint &position);

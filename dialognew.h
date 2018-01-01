@@ -18,12 +18,14 @@ public:
 
 private:
     QString dir,path;
+    void checkWriteable();
 
 public slots:
-    void textChange(QString);
+    virtual void accept();
 
 private slots:
     void browse();
+    void textChange();
 };
 
 #endif // DIALOGNEW_H
