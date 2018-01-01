@@ -18,7 +18,7 @@ public:
 
 private:
     QString dir,path;
-    void checkWriteable();
+    bool isPathWriteable();
 
 public slots:
     virtual void accept();

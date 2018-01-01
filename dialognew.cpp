@@ -50,10 +50,11 @@ void DialogNew::textChange()
             LEFN += fn + "; ";
         }
         ui->lineEditFilename->setText(LEFN);
+        ui->lineEditFilename->setCursorPosition(0);
     }
 }
 
-void DialogNew::checkWriteable()
+bool DialogNew::isPathWriteable()
 {
     QString filepath = ui->lineEditPath->text() + "/temp";
     QFile *file = new QFile(filepath);
@@ -61,8 +62,10 @@ void DialogNew::checkWriteable()
     if(b){
         file->close();
         file->remove();
+        return true;
     }else{
         QMessageBox::critical(NULL, "错误", "目录无法写入！");
+        return false;
     }
 }
 
@@ -71,7 +74,7 @@ void DialogNew::accept()
     QString spath = ui->lineEditPath->text();
     QDir dir(spath);
     if(dir.exists()){
-        checkWriteable();
+        if(isPathWriteable()) QDialog::accept();
     }else{
         bool ok = dir.mkdir(spath);
         if(ok){
@@ -80,5 +83,4 @@ void DialogNew::accept()
             QMessageBox::critical(NULL, "错误", "无法创建文件夹！");
         }
     }
-
 }
