@@ -263,6 +263,19 @@ void MainWindow::addNew()
         qDebug() << "迅雷协议解码：" << surl;
         sfn = QFileInfo(surl).fileName();
         sfn = sfn.left(sfn.indexOf("?"));
+        Form *form = new Form;
+        form->ui->labelFilename->setText(sfn);
+        form->ui->labelURL->setText(surl);
+        form->ui->labelURL->adjustSize();
+        form->ui->labelPath->setText(spath);
+        form->ui->labelTimeCreate->setText(stime);
+        QListWidgetItem *LWI = new QListWidgetItem(ui->listWidgetDownloading);
+        ui->listWidgetDownloading->setItemWidget(LWI,form);
+        LWI->setSizeHint(QSize(1200,30));
+        ui->listWidgetDownloading->addItem(LWI);
+        form->download(surl);
+        connect(form,SIGNAL(downloadFinish()),this,SLOT(moveToDownloaded()));
+        saveList("downloading");
     }else{
         QStringList SL = surl.split("\n");
         for(int i=0; i<SL.size(); i++){

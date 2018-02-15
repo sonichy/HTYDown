@@ -1,3 +1,4 @@
+https://raw.githubusercontent.com/linuxdeepin/qcef/master/README.md
 https://raw.githubusercontent.com/linuxdeepin/qcef/master/browser_demo/CMakeLists.txt
 https://raw.githubusercontent.com/linuxdeepin/qcef/master/browser_demo/browser_address_edit.cpp
 https://raw.githubusercontent.com/linuxdeepin/qcef/master/browser_demo/browser_address_edit.h
