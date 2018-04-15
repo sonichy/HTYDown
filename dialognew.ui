@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>350</height>
+    <height>300</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -57,22 +57,6 @@
      </item>
      <item row="2" column="2">
       <widget class="QLineEdit" name="lineEditFilename"/>
-     </item>
-     <item row="5" column="2">
-      <widget class="QPushButton" name="btnBrowse">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="focusPolicy">
-        <enum>Qt::NoFocus</enum>
-       </property>
-       <property name="text">
-        <string>浏览</string>
-       </property>
-      </widget>
      </item>
      <item row="1" column="2">
       <widget class="QLineEdit" name="lineEditDecode">

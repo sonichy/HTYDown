@@ -3,6 +3,8 @@
 #include <QFileDialog>
 #include <QStandardPaths>
 #include <QMessageBox>
+#include <QAction>
+#include <QPushButton>
 
 DialogNew::DialogNew(QWidget *parent) :
     QDialog(parent),
@@ -10,10 +12,13 @@ DialogNew::DialogNew(QWidget *parent) :
 {
     ui->setupUi(this);
     ui->buttonBox->button(QDialogButtonBox::Ok)->setText("确定");
-    ui->buttonBox->button(QDialogButtonBox::Cancel)->setText("取消");
-    connect(ui->btnBrowse, SIGNAL(clicked()), this, SLOT(browse()));
+    ui->buttonBox->button(QDialogButtonBox::Cancel)->setText("取消");    
     connect(ui->textEditURL,SIGNAL(textChanged()),this,SLOT(textChange()));
     ui->lineEditPath->setText(QStandardPaths::standardLocations(QStandardPaths::DownloadLocation).first());
+    QAction *action_browse = new QAction(this);
+    action_browse->setIcon(style()->standardIcon(QStyle::SP_DirIcon));
+    connect(action_browse,SIGNAL(triggered(bool)),this,SLOT(browse()));
+    ui->lineEditPath->addAction(action_browse,QLineEdit::TrailingPosition);
 }
 
 DialogNew::~DialogNew()
@@ -23,9 +28,9 @@ DialogNew::~DialogNew()
 
 void DialogNew::browse()
 {
-    dir = QFileDialog::getExistingDirectory(this,"保存路径",path, QFileDialog::ShowDirsOnly |QFileDialog::DontResolveSymlinks);
-    if(dir!=""){
-        path=dir;
+    dir = QFileDialog::getExistingDirectory(this,"保存路径", path, QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+    if (dir != "") {
+        path = dir;
         ui->lineEditPath->setText(path);
     }
 }

@@ -40,15 +40,15 @@ void Form::download(QString surl)
 QString sbytes(qint64 bytes){
     QString unit = "B";
     double dbytes = bytes*1.0;
-    if(bytes > 999999999){
+    if (bytes > 999999999) {
         dbytes /= (1024*1024*1024);
-        unit="GB";
-    }else{
-        if(bytes > 999999){
+        unit = "GB";
+    } else {
+        if (bytes > 999999) {
             dbytes /= (1024*1024);
-            unit="MB";
-        }else{
-            if(bytes > 999){
+            unit = "MB";
+        } else {
+            if (bytes > 999) {
                 dbytes /= 1024;
                 unit = "KB";
             }
@@ -60,15 +60,15 @@ QString sbytes(qint64 bytes){
 QString sspeed(int speed){
     QString unit = "B/s";
     double dspeed = speed*1.0;
-    if(speed > 999999999){
+    if (speed > 999999999) {
         dspeed /= (1024*1024*1024);
         unit = "GB/s";
-    }else{
-        if(speed > 999999){
+    } else {
+        if (speed > 999999) {
             dspeed /= (1024*1024);
             unit = "MB/s";
-        }else{
-            if(speed > 999){
+        } else {
+            if (speed > 999) {
                 dspeed /= 1024;
                 unit = "KB/s";
             }
@@ -101,7 +101,7 @@ void Form::appendList(QString filenameWrite, QString filename, QString size, int
 {
     QString filepath = QDir::currentPath() + "/" + filenameWrite;
     QFile file(filepath);
-    if(file.open(QFile::WriteOnly | QIODevice::Append)){
+    if (file.open(QFile::WriteOnly | QIODevice::Append)) {
         QTextStream ts(&file);
         QString s = filename + "#" + size + "#" + QString::number(progressmax) + "#" + QString::number(progress)+ "#" + speed + "#" + url + "#" + elapse + "#" + timeCreate + "#" + path + "\n";
         ts << s;
